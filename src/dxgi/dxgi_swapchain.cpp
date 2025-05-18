@@ -149,8 +149,17 @@ namespace dxvk {
     if (!pDesc)
       return E_INVALIDARG;
     
-    pDesc->BufferDesc.Width     = m_desc.Width;
-    pDesc->BufferDesc.Height    = m_desc.Height;
+    const char* forceRes = std::getenv("DXVK_FORCE_4K");
+    
+    if (forceRes && std::strcmp(forceRes, "1") == 0) {
+      Logger::info("DXVK: Overriding resolution to 3840x2160 (4K)");
+      pDesc->BufferDesc.Width  = 3840;
+      pDesc->BufferDesc.Height = 2160;
+    } else {
+      pDesc->BufferDesc.Width  = m_desc.Width;
+      pDesc->BufferDesc.Height = m_desc.Height;
+    }
+
     pDesc->BufferDesc.RefreshRate = m_descFs.RefreshRate;
     pDesc->BufferDesc.Format    = m_desc.Format;
     pDesc->BufferDesc.ScanlineOrdering = m_descFs.ScanlineOrdering;
