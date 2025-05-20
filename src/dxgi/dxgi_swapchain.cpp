@@ -432,11 +432,14 @@ namespace dxvk {
     if (!wsi::isWindow(m_window))
       return DXGI_ERROR_INVALID_CALL;
 
-    constexpr UINT PreserveFlags = DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
+    const char* force4k = std::getenv("DXVK_FORCE_4K");
 
-    if ((m_desc.Flags & PreserveFlags) != (SwapChainFlags & PreserveFlags))
-      return DXGI_ERROR_INVALID_CALL;
-    
+    if (force4k && std::strcmp(force4k, "1") == 0) {
+      Logger::info("DXVK: Forcing buffer allocation at 3840x2160 (4K)");
+      Width  = 3840;
+      Height = 2160;
+    }
+
     std::lock_guard<dxvk::mutex> lock(m_lockBuffer);
     m_desc.Width  = Width;
     m_desc.Height = Height;
